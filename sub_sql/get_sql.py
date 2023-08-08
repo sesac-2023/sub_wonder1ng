@@ -5,9 +5,11 @@ class Get_sql():
     def __init__(self, res) -> None:
         self.con = pymysql.connect(**res)
 
-    def insert_request(self, target_addr: str, alarm_time:str, car_model:str, high_price:int=999999, low_price:int=0, max_sales_count:int=500) -> None:
+    def insert_request(self, target_addr: str, alarm_time:str, brand_name:str, car_model:str, high_price:int=999999, low_price:int=0, max_sales_count:int=500) -> None:
         with self.con.cursor() as cur:
-            cur.execute(f'insert into user_requests values(\'{target_addr}\', \'{alarm_time}\', \'{car_model})\', {high_price}, {low_price}, {max_sales_count}')
+            cur.execute(f'select brand_id from brand where brand_name=\'{brand_name}\'')
+            brand_code = cur.fetchone()[0]
+            cur.execute(f'insert into user_requests values(\'{target_addr}\', \'{alarm_time}\', {brand_code}, \'{car_model}\', {high_price}, {low_price}, {max_sales_count})')
         self.con.commit()
 
     def select_request(self) -> pd.DataFrame:
